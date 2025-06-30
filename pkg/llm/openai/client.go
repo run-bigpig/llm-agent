@@ -54,10 +54,15 @@ func WithRetry(opts ...retry.Option) Option {
 }
 
 // NewClient creates a new OpenAI client
-func NewClient(apiKey string, options ...Option) *OpenAIClient {
+func NewClient(baseUrl, apiKey string, options ...Option) *OpenAIClient {
+	if baseUrl == "" {
+		baseUrl = "https://api.openai.com/v1"
+	}
+	config := openai.DefaultConfig(apiKey)
+	config.BaseURL = baseUrl
 	// Create client with default options
 	client := &OpenAIClient{
-		Client: openai.NewClient(apiKey),
+		Client: openai.NewClientWithConfig(config),
 		Model:  "gpt-4o-mini",
 		logger: logging.New(),
 	}
